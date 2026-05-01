@@ -33,12 +33,12 @@ const resolveUserRole = async (userId, defaultRole) => {
     return defaultRole;
   }
 
-  const [citizens] = await db.query('SELECT id FROM ciudadanos WHERE id_usuario = ?', [userId]);
+  const [citizens] = await db.query('SELECT id_ciudadano FROM ciudadanos WHERE id_usuario = ?', [userId]);
   if (citizens.length > 0) {
     return 'citizen';
   }
 
-  const [institutions] = await db.query('SELECT id FROM instituciones WHERE id_usuario = ?', [userId]);
+  const [institutions] = await db.query('SELECT id_institucion FROM instituciones WHERE id_usuario = ?', [userId]);
   if (institutions.length > 0) {
     return 'institution';
   }
@@ -209,9 +209,19 @@ const registerInstitution = async (req, res) => {
       const userId = await createUserRecord(connection, email, hashedPassword, otp, expiresAt);
 
       await connection.query(
-        `INSERT INTO instituciones (id_usuario, contactName, institutionName, cuit, institutionType, phone, provincia, ciudad, zona, address, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [userId, contactName, institutionName, cuit, institutionType, phone, provincia, ciudad, zona, address, 'pending']
+        `INSERT INTO instituciones (id_usuario, nombre, tipo, telefono, provincia, ciudad, zona, direccion, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          userId,
+          institutionName,
+          institutionType,
+          phone,
+          provincia,
+          ciudad,
+          zona,
+          address,
+          'pending',
+        ]
       );
 
       await connection.commit();
