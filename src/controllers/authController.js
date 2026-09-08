@@ -424,8 +424,8 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Error en el servidor al intentar iniciar sesión' });
+    console.error('Error en login:', error);
+    return res.status(500).json({ error: 'Error en el servidor al intentar iniciar sesión', detalle: error.message });
   }
 };
 
