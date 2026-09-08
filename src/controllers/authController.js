@@ -94,10 +94,11 @@ const createTokens = (userId, email, role) => {
 const saveRefreshToken = async (refreshToken, userId, userType) => {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_EXPIRATION_DAYS);
+  const normalizedUserType = normalizeRole(userType);
 
   await db.query(
     'INSERT INTO refresh_tokens (token, id_usuario, user_type, expires_at, created_at) VALUES (?, ?, ?, ?, NOW())',
-    [refreshToken, userId, userType, expiresAt]
+    [refreshToken, userId, normalizedUserType, expiresAt]
   );
 };
 
