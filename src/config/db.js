@@ -15,15 +15,21 @@ const parseConnectionFromUrl = (connectionUrl) => {
 
 const connectionUrl = process.env.MYSQL_PUBLIC_URL || process.env.MYSQL_PRIVATE_URL || process.env.MYSQL_URL || process.env.DATABASE_URL;
 
-const dbConfig = connectionUrl
-  ? parseConnectionFromUrl(connectionUrl)
-  : {
+let dbConfig;
+if (connectionUrl) {
+  dbConfig = parseConnectionFromUrl(connectionUrl);
+  if (process.env.MYSQLDATABASE || process.env.DB_NAME) {
+    dbConfig.database = process.env.MYSQLDATABASE || process.env.DB_NAME;
+  }
+} else {
+  dbConfig = {
     host: process.env.MYSQLHOST || process.env.DB_HOST,
-    port: parseInt(process.env.MYSQLPORT || process.env.DB_PORT, 10),
+    port: parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '3306', 10),
     user: process.env.MYSQLUSER || process.env.DB_USER,
     password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD,
-    database: process.env.MYSQLDATABASE || process.env.DB_NAME,
+    database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'railway',
   };
+}
 
 const pool = mysql.createPool({
   host: dbConfig.host,
