@@ -13,24 +13,26 @@ const parseConnectionFromUrl = (connectionUrl) => {
   };
 };
 
-const dbConfig = process.env.MYSQL_PUBLIC_URL
-  ? parseConnectionFromUrl(process.env.MYSQL_PUBLIC_URL)
+const connectionUrl = process.env.MYSQL_PUBLIC_URL || process.env.MYSQL_PRIVATE_URL || process.env.MYSQL_URL || process.env.DATABASE_URL;
+
+const dbConfig = connectionUrl
+  ? parseConnectionFromUrl(connectionUrl)
   : {
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT, 10),
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-    };
+    host: process.env.MYSQLHOST || process.env.DB_HOST,
+    port: parseInt(process.env.MYSQLPORT || process.env.DB_PORT, 10),
+    user: process.env.MYSQLUSER || process.env.DB_USER,
+    password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD,
+    database: process.env.MYSQLDATABASE || process.env.DB_NAME,
+  };
 
 const pool = mysql.createPool({
-  host:               dbConfig.host,
-  port:               dbConfig.port,
-  user:               dbConfig.user,
-  password:           dbConfig.password,
-  database:           dbConfig.database,
+  host: dbConfig.host,
+  port: dbConfig.port,
+  user: dbConfig.user,
+  password: dbConfig.password,
+  database: dbConfig.database,
   waitForConnections: true,
-  connectionLimit:    10,
+  connectionLimit: 10,
 });
 
 // Verificar conexión al iniciar
